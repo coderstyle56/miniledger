@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    phone VARCHAR (15) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+
+);
+
+CREATE TABLE IF NOT EXISTS otps (
+    id SERIAL PRIMARY KEY,
+    phone VARCHAR(15) NOT NULL,
+    code VARCHAR(6) NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS loans (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    friend_name VARCHAR(100) NOT NULL,
+    amount NUMERIC(12,2) NOT NULL CHECK (amount > 0),
+    due_date  DATE NOT NULL,
+    is_repaid BOOLEAN NOT NULL DEFAULT FALSE,
+    repaid_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_loans_user ON loans(user_id);
